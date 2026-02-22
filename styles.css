@@ -278,6 +278,17 @@ body {
     cursor: pointer;
 }
 
+.service-card.animate {
+    animation: slideInLeft 1s ease-out forwards;
+}
+
+.service-card.animate:nth-child(1) { animation-delay: 0.1s; }
+.service-card.animate:nth-child(2) { animation-delay: 0.25s; }
+.service-card.animate:nth-child(3) { animation-delay: 0.4s; }
+.service-card.animate:nth-child(4) { animation-delay: 0.55s; }
+.service-card.animate:nth-child(5) { animation-delay: 0.7s; }
+.service-card.animate:nth-child(6) { animation-delay: 0.85s; }
+
 .service-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -324,6 +335,13 @@ body {
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
 }
+
+.founder-card.animate {
+    animation: slideInBottom 1.2s ease-out forwards;
+}
+
+.founder-card.animate:nth-child(1) { animation-delay: 0.2s; }
+.founder-card.animate:nth-child(2) { animation-delay: 0.5s; }
 
 .founder-card:hover {
     transform: translateY(-8px);
@@ -452,6 +470,17 @@ body {
     transition: all 0.3s ease;
 }
 
+.stat-card.animate {
+    animation: zoomIn 1s ease-out forwards;
+}
+
+.stat-card.animate:nth-child(1) { animation-delay: 0.1s; }
+.stat-card.animate:nth-child(2) { animation-delay: 0.2s; }
+.stat-card.animate:nth-child(3) { animation-delay: 0.3s; }
+.stat-card.animate:nth-child(4) { animation-delay: 0.4s; }
+.stat-card.animate:nth-child(5) { animation-delay: 0.5s; }
+.stat-card.animate:nth-child(6) { animation-delay: 0.6s; }
+
 .stat-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 25px rgba(0, 102, 204, 0.1);
@@ -492,6 +521,20 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
 }
+
+.tech-category.animate {
+    animation: slideInRight 1.1s ease-out forwards;
+}
+
+.tech-category.animate:nth-child(odd) {
+    animation: slideInLeft 1.1s ease-out forwards;
+}
+
+.tech-category.animate:nth-child(1) { animation-delay: 0.15s; }
+.tech-category.animate:nth-child(2) { animation-delay: 0.3s; }
+.tech-category.animate:nth-child(3) { animation-delay: 0.45s; }
+.tech-category.animate:nth-child(4) { animation-delay: 0.6s; }
+.tech-category.animate:nth-child(5) { animation-delay: 0.75s; }
 
 .tech-category:hover {
     transform: translateY(-5px);
@@ -567,6 +610,15 @@ body {
     border-left: 4px solid var(--secondary-blue);
     transition: all 0.3s ease;
 }
+
+.testimonial-card.animate {
+    animation: slideInBottom 1.1s ease-out forwards;
+}
+
+.testimonial-card.animate:nth-child(1) { animation-delay: 0.15s; }
+.testimonial-card.animate:nth-child(2) { animation-delay: 0.3s; }
+.testimonial-card.animate:nth-child(3) { animation-delay: 0.45s; }
+.testimonial-card.animate:nth-child(4) { animation-delay: 0.6s; }
 
 .testimonial-card:hover {
     transform: translateY(-5px);
@@ -745,6 +797,50 @@ body {
     }
 }
 
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-60px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(60px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInBottom {
+    from {
+        opacity: 0;
+        transform: translateY(60px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 /* =====================================================
    RESPONSIVE DESIGN
    ===================================================== */
@@ -894,4 +990,30 @@ body {
         padding: 0.3rem 0.6rem;
         font-size: 0.75rem;
     }
+}
+
+/* =====================================================
+   SCROLL ANIMATION STATES
+   ===================================================== */
+
+/* Elements waiting to be animated (set by JS) */
+.will-animate {
+    opacity: 0 !important;
+}
+
+.will-animate.service-card {
+    transform: translateX(-40px);
+}
+
+.will-animate.founder-card,
+.will-animate.testimonial-card {
+    transform: translateY(40px);
+}
+
+.will-animate.stat-card {
+    transform: scale(0.85);
+}
+
+.will-animate.tech-category {
+    transform: translateX(40px);
 }

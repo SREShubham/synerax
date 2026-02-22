@@ -203,26 +203,43 @@ function initNavigation() {
 // =====================================================
 
 function initScrollAnimations() {
+    // Select all elements to animate
+    const elementsToObserve = document.querySelectorAll(
+        '.service-card, .founder-card, .stat-card, .testimonial-card, .tech-category'
+    );
+    
+    // Mark elements not in viewport as will-animate
+    elementsToObserve.forEach(element => {
+        const rect = element.getBoundingClientRect();
+        const isInViewport = rect.top < window.innerHeight * 0.85 && rect.bottom > 0;
+        
+        if (!isInViewport) {
+            element.classList.add('will-animate');
+        } else {
+            element.classList.add('animate');
+        }
+    });
+
     const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
+        threshold: 0.15,
+        rootMargin: '0px 0px -100px 0px'
     };
 
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
+                entry.target.classList.remove('will-animate');
+                entry.target.classList.add('animate');
                 observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
 
-    // Observe all service cards, testimonial cards, etc.
-    const elementsToObserve = document.querySelectorAll('.service-card, .founder-card, .stat-card, .testimonial-card, .tech-category');
+    // Observe elements
     elementsToObserve.forEach(element => {
-        element.style.opacity = '0';
-        element.style.transform = 'translateY(20px)';
-        observer.observe(element);
+        if (element.classList.contains('will-animate')) {
+            observer.observe(element);
+        }
     });
 }
 
