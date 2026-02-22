@@ -1,6 +1,117 @@
 // =====================================================
-// SYNERAX - Interactive Features
+// SYNERAX - Interactive Features with 3D
 // =====================================================
+
+// THREE.JS 3D SCENE INITIALIZATION
+function initThreeJsBackground() {
+    const canvas3dContainer = document.getElementById('canvas3d');
+    if (!canvas3dContainer || typeof THREE === 'undefined') return;
+
+    try {
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0f1419);
+        scene.fog = new THREE.Fog(0x0f1419, 100, 1000);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 50;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x0f1419, 0.1);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        canvas3dContainer.appendChild(renderer.domElement);
+
+        // Create 3D objects
+        const geometry = new THREE.IcosahedronGeometry(1, 4);
+        const material = new THREE.MeshPhongMaterial({ 
+            color: 0x0066CC, 
+            emissive: 0x0052A3, 
+            wireframe: false,
+            shininess: 100
+        });
+        
+        const objects = [];
+        for (let i = 0; i < 15; i++) {
+            const mesh = new THREE.Mesh(geometry, material.clone());
+            mesh.position.set(
+                (Math.random() - 0.5) * 100,
+                (Math.random() - 0.5) * 100,
+                (Math.random() - 0.5) * 100
+            );
+            mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+            mesh.scale.set(Math.random() * 1.5 + 0.5, Math.random() * 1.5 + 0.5, Math.random() * 1.5 + 0.5);
+            scene.add(mesh);
+            objects.push({
+                mesh: mesh,
+                speedX: (Math.random() - 0.5) * 0.005,
+                speedY: (Math.random() - 0.5) * 0.005,
+                speedZ: (Math.random() - 0.5) * 0.005
+            });
+        }
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x00D4FF, 0.6);
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0xFF3D3D, 0.8);
+        pointLight.position.set(50, 50, 50);
+        scene.add(pointLight);
+
+        const pointLight2 = new THREE.PointLight(0x00D4FF, 0.6);
+        pointLight2.position.set(-50, -50, -50);
+        scene.add(pointLight2);
+
+        // Animation loop
+        function animate3d() {
+            requestAnimationFrame(animate3d);
+
+            objects.forEach(obj => {
+                obj.mesh.rotation.x += obj.speedX * 2;
+                obj.mesh.rotation.y += obj.speedY * 2;
+                obj.mesh.rotation.z += obj.speedZ * 2;
+
+                obj.mesh.position.x += obj.speedX * 0.5;
+                obj.mesh.position.y += obj.speedY * 0.5;
+                obj.mesh.position.z += obj.speedZ * 0.5;
+
+                // Wrap around boundaries
+                if (obj.mesh.position.x > 60) obj.mesh.position.x = -60;
+                if (obj.mesh.position.x < -60) obj.mesh.position.x = 60;
+                if (obj.mesh.position.y > 60) obj.mesh.position.y = -60;
+                if (obj.mesh.position.y < -60) obj.mesh.position.y = 60;
+                if (obj.mesh.position.z > 60) obj.mesh.position.z = -60;
+                if (obj.mesh.position.z < -60) obj.mesh.position.z = 60;
+            });
+
+            // Subtle camera movement
+            camera.position.z += (Math.sin(Date.now() * 0.0001) * 0.1);
+            renderer.render(scene, camera);
+        }
+
+        animate3d();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        console.log('✓ Three.js 3D scene initialized');
+    } catch (error) {
+        console.log('⚠ Three.js initialization skipped:', error);
+    }
+}
+
+// FLOATING ELEMENTS ANIMATION
+function initFloatingElements() {
+    const floatingElements = document.querySelectorAll('.float-box');
+    
+    floatingElements.forEach((element, index) => {
+        element.style.animation = `float 15s ease-in-out infinite`;
+        element.style.animationDelay = `${index * 1}s`;
+    });
+}
 
 // Initialize Canvas Background Animation
 function initCanvasBackground() {
@@ -334,6 +445,7 @@ function initDarkModeToggle() {
 // =====================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    initThreeJsBackground();
     initCanvasBackground();
     initNavigation();
     initScrollAnimations();
@@ -345,8 +457,9 @@ document.addEventListener('DOMContentLoaded', () => {
     initParallax();
     initFormValidation();
     initDarkModeToggle();
+    initFloatingElements();
 
-    console.log('✓ Synerax website initialized successfully');
+    console.log('✓ Synerax website initialized successfully with 3D animations');
 });
 
 // =====================================================
