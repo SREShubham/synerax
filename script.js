@@ -1,53 +1,11 @@
 // =====================================================
-// SYNERAX - Interactive Features with 3D
+// SYNERAX - Interactive Features
 // =====================================================
 
-// THREE.JS 3D SCENE INITIALIZATION
-function initThreeJsBackground() {
-    const canvas3dContainer = document.getElementById('canvas3d');
-    if (!canvas3dContainer || typeof THREE === 'undefined') return;
-
-    try {
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x0f1419);
-        scene.fog = new THREE.Fog(0x0f1419, 100, 1000);
-
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 50;
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setClearColor(0x0f1419, 0.1);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        canvas3dContainer.appendChild(renderer.domElement);
-
-        // Create 3D objects
-        const geometry = new THREE.IcosahedronGeometry(1, 4);
-        const material = new THREE.MeshPhongMaterial({ 
-            color: 0x0066CC, 
-            emissive: 0x0052A3, 
-            wireframe: false,
-            shininess: 100
-        });
-        
-        const objects = [];
-        for (let i = 0; i < 15; i++) {
-            const mesh = new THREE.Mesh(geometry, material.clone());
-            mesh.position.set(
-                (Math.random() - 0.5) * 100,
-                (Math.random() - 0.5) * 100,
-                (Math.random() - 0.5) * 100
-            );
-            mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
-            mesh.scale.set(Math.random() * 1.5 + 0.5, Math.random() * 1.5 + 0.5, Math.random() * 1.5 + 0.5);
-            scene.add(mesh);
-            objects.push({
-                mesh: mesh,
-                speedX: (Math.random() - 0.5) * 0.005,
-                speedY: (Math.random() - 0.5) * 0.005,
-                speedZ: (Math.random() - 0.5) * 0.005
-            });
-        }
+// Initialize Canvas Background Animation
+function initCanvasBackground() {
+    const canvas = document.getElementById('canvas');
+    if (!canvas) return;
 
         // Lighting
         const ambientLight = new THREE.AmbientLight(0x00D4FF, 0.6);
