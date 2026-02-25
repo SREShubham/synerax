@@ -60,7 +60,25 @@ npx http-server
 3. Select "Deploy from a branch" under Source
 4. Choose the branch (usually `main`) and `/root` folder
 5. Click Save
-6. Your site will be available at `https://yourusername.github.io/synerax`
+6. Add a `CNAME` file in the repository root with your domain (for example: `synerax.in`)
+7. In Pages settings, set **Custom domain** to `synerax.in` and enable **Enforce HTTPS** after DNS is active
+8. Your site will be available at `https://synerax.in`
+
+## GoDaddy DNS Setup for `synerax.in`
+
+In your GoDaddy DNS manager, create/update the following records:
+
+- **Type:** A, **Name:** `@`, **Value:** `185.199.108.153`
+- **Type:** A, **Name:** `@`, **Value:** `185.199.109.153`
+- **Type:** A, **Name:** `@`, **Value:** `185.199.110.153`
+- **Type:** A, **Name:** `@`, **Value:** `185.199.111.153`
+- **Type:** CNAME, **Name:** `www`, **Value:** `sreshubham.github.io`
+
+Notes:
+
+- GitHub username used here: `sreshubham`
+- Remove conflicting `@` or `www` records if they point somewhere else
+- DNS propagation can take a few minutes to 24 hours
 
 ## File Structure
 
