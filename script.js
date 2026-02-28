@@ -252,6 +252,58 @@ function initCanvasBackground() {
 // NAVIGATION BAR INTERACTION
 // =====================================================
 
+function initHeroTyping() {
+    const typingTarget = document.querySelector('.hero-typing');
+    if (!typingTarget) return;
+
+    const fullText = (typingTarget.getAttribute('data-text') || typingTarget.textContent || '').trim();
+    if (!fullText) return;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        typingTarget.textContent = fullText;
+        return;
+    }
+
+    let index = 0;
+    let deleting = false;
+    const typingSpeed = 90;
+    const deletingSpeed = 45;
+    const pauseAfterType = 1200;
+    const pauseAfterDelete = 350;
+
+    typingTarget.classList.add('typing');
+    typingTarget.textContent = '';
+
+    function tick() {
+        if (!deleting) {
+            index += 1;
+            typingTarget.textContent = fullText.slice(0, index);
+
+            if (index >= fullText.length) {
+                deleting = true;
+                setTimeout(tick, pauseAfterType);
+                return;
+            }
+
+            setTimeout(tick, typingSpeed);
+            return;
+        }
+
+        index -= 1;
+        typingTarget.textContent = fullText.slice(0, index);
+
+        if (index <= 0) {
+            deleting = false;
+            setTimeout(tick, pauseAfterDelete);
+            return;
+        }
+
+        setTimeout(tick, deletingSpeed);
+    }
+
+    tick();
+}
+
 function initNavigation() {
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
@@ -377,20 +429,46 @@ function initNewsletter() {
     const form = document.querySelector('.newsletter-form');
     if (!form) return;
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = form.querySelector('input[type="email"]');
+        const button = form.querySelector('button[type="submit"]');
+        if (!email || !button) return;
+
+        const submitUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSceXgxNorK8an_wINhi8fKaDLr8TJunHv5VViuCQ6-ZVQzRWg/formResponse';
+        const openFormUrl = 'https://forms.gle/mcigYVRkAZ7E6ejTA';
+        const entryKey = 'entry.485609515';
         
         if (email.value) {
-            // Show success message
-            const button = form.querySelector('button');
             const originalText = button.textContent;
-            button.textContent = '✓ Subscribed!';
-            button.style.background = 'linear-gradient(135deg, #00AA00, #00FF00)';
+            button.textContent = 'Submitting...';
+            button.disabled = true;
+
+            try {
+                const payload = new URLSearchParams();
+                payload.append(entryKey, email.value.trim());
+
+                await fetch(submitUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                    },
+                    body: payload.toString()
+                });
+
+                button.textContent = '✓ Subscribed!';
+                button.style.background = 'linear-gradient(135deg, #00AA00, #00FF00)';
+                email.value = '';
+            } catch (error) {
+                button.textContent = 'Open Form';
+                button.style.background = 'linear-gradient(135deg, #FF8A00, #FFB300)';
+                window.open(openFormUrl, '_blank', 'noopener');
+            }
 
             setTimeout(() => {
-                email.value = '';
                 button.textContent = originalText;
+                button.disabled = false;
                 button.style.background = '';
             }, 3000);
         }
@@ -504,6 +582,7 @@ function initDarkModeToggle() {
 // =====================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    initHeroTyping();
     initThreeJsBackground();
     initCanvasBackground();
     initNavigation();

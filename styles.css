@@ -193,11 +193,23 @@ body {
 }
 
 .hero-title {
-    font-size: 3.5rem;
+    font-size: 2.8rem;
     font-weight: 700;
     margin-bottom: 1.5rem;
     line-height: 1.2;
     letter-spacing: -0.5px;
+    white-space: nowrap;
+}
+
+.hero-typing {
+    display: inline-block;
+}
+
+.hero-typing.typing::after {
+    content: '|';
+    margin-left: 0.08em;
+    opacity: 1;
+    animation: blinkCaret 0.85s step-end infinite;
 }
 
 .hero-subtitle {
@@ -316,7 +328,7 @@ body {
 
 .service-card {
     padding: 2.5rem;
-    border-radius: 8px;
+    border-radius: 16px;
     background: var(--light-bg);
     border-left: 4px solid var(--secondary-blue);
     transition: all 0.3s ease;
@@ -324,19 +336,19 @@ body {
 }
 
 .service-card.animate {
-    animation: slideInLeft 1s ease-out forwards;
+    animation: fadeInUp 0.7s ease-out forwards;
 }
 
-.service-card.animate:nth-child(1) { animation-delay: 0.1s; }
-.service-card.animate:nth-child(2) { animation-delay: 0.25s; }
-.service-card.animate:nth-child(3) { animation-delay: 0.4s; }
-.service-card.animate:nth-child(4) { animation-delay: 0.55s; }
-.service-card.animate:nth-child(5) { animation-delay: 0.7s; }
-.service-card.animate:nth-child(6) { animation-delay: 0.85s; }
+.service-card.animate:nth-child(1) { animation-delay: 0.06s; }
+.service-card.animate:nth-child(2) { animation-delay: 0.12s; }
+.service-card.animate:nth-child(3) { animation-delay: 0.18s; }
+.service-card.animate:nth-child(4) { animation-delay: 0.24s; }
+.service-card.animate:nth-child(5) { animation-delay: 0.3s; }
+.service-card.animate:nth-child(6) { animation-delay: 0.36s; }
 
 .service-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     border-left-color: var(--accent-blue);
 }
 
@@ -374,7 +386,7 @@ body {
 
 .founder-card {
     background: var(--white);
-    border-radius: 8px;
+    border-radius: 16px;
     padding: 2.5rem;
     text-align: center;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
@@ -382,15 +394,15 @@ body {
 }
 
 .founder-card.animate {
-    animation: slideInBottom 1.2s ease-out forwards;
+    animation: fadeInUp 0.75s ease-out forwards;
 }
 
-.founder-card.animate:nth-child(1) { animation-delay: 0.2s; }
-.founder-card.animate:nth-child(2) { animation-delay: 0.5s; }
+.founder-card.animate:nth-child(1) { animation-delay: 0.08s; }
+.founder-card.animate:nth-child(2) { animation-delay: 0.16s; }
 
 .founder-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
 }
 
 .founder-image {
@@ -509,26 +521,26 @@ body {
 .stat-card {
     text-align: center;
     padding: 2rem;
-    border-radius: 8px;
+    border-radius: 16px;
     background: linear-gradient(135deg, var(--light-blue), #E0F0FF);
     border: 1px solid var(--border-color);
     transition: all 0.3s ease;
 }
 
 .stat-card.animate {
-    animation: zoomIn 1s ease-out forwards;
+    animation: fadeInUp 0.7s ease-out forwards;
 }
 
-.stat-card.animate:nth-child(1) { animation-delay: 0.1s; }
-.stat-card.animate:nth-child(2) { animation-delay: 0.2s; }
-.stat-card.animate:nth-child(3) { animation-delay: 0.3s; }
-.stat-card.animate:nth-child(4) { animation-delay: 0.4s; }
-.stat-card.animate:nth-child(5) { animation-delay: 0.5s; }
-.stat-card.animate:nth-child(6) { animation-delay: 0.6s; }
+.stat-card.animate:nth-child(1) { animation-delay: 0.05s; }
+.stat-card.animate:nth-child(2) { animation-delay: 0.1s; }
+.stat-card.animate:nth-child(3) { animation-delay: 0.15s; }
+.stat-card.animate:nth-child(4) { animation-delay: 0.2s; }
+.stat-card.animate:nth-child(5) { animation-delay: 0.25s; }
+.stat-card.animate:nth-child(6) { animation-delay: 0.3s; }
 
 .stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 102, 204, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 102, 204, 0.08);
 }
 
 .stat-number {
@@ -896,6 +908,17 @@ body {
     }
 }
 
+@keyframes blinkCaret {
+    0%,
+    45% {
+        opacity: 1;
+    }
+    50%,
+    100% {
+        opacity: 0;
+    }
+}
+
 /* =====================================================
    RESPONSIVE DESIGN
    ===================================================== */
@@ -1084,16 +1107,16 @@ body {
 }
 
 .will-animate.service-card {
-    transform: translateX(-40px);
+    transform: translateY(14px);
 }
 
 .will-animate.founder-card,
 .will-animate.testimonial-card {
-    transform: translateY(40px);
+    transform: translateY(14px);
 }
 
 .will-animate.stat-card {
-    transform: scale(0.85);
+    transform: translateY(12px) scale(0.98);
 }
 
 .will-animate.tech-category {
