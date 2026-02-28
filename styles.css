@@ -702,6 +702,19 @@ body {
     font-size: 0.95rem;
 }
 
+.testimonial-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: var(--accent-blue);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.testimonial-link:hover {
+    color: var(--secondary-blue);
+}
+
 /* =====================================================
    CONTACT SECTION
    ===================================================== */
