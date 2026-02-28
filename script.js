@@ -2,166 +2,250 @@
 // SYNERAX - Interactive Features
 // =====================================================
 
-// Initialize Canvas Background Animation
-function initCanvasBackground() {
-    const canvas = document.getElementById('canvas');
-    if (!canvas) return;
+// THREE.JS HERO BACKGROUND
+function initThreeJsBackground() {
+    const container = document.getElementById('canvas3d');
+    if (!container || typeof THREE === 'undefined') return;
 
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0x00D4FF, 0.6);
-        scene.add(ambientLight);
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0x0d2847, 22, 140);
 
-        const pointLight = new THREE.PointLight(0xFF3D3D, 0.8);
-        pointLight.position.set(50, 50, 50);
-        scene.add(pointLight);
+    const getSize = () => ({ width: container.clientWidth || window.innerWidth, height: container.clientHeight || window.innerHeight });
+    const initialSize = getSize();
 
-        const pointLight2 = new THREE.PointLight(0x00D4FF, 0.6);
-        pointLight2.position.set(-50, -50, -50);
-        scene.add(pointLight2);
+    const camera = new THREE.PerspectiveCamera(62, initialSize.width / initialSize.height, 0.1, 1200);
+    camera.position.set(0, 2.5, 40);
 
-        // Animation loop
-        function animate3d() {
-            requestAnimationFrame(animate3d);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(initialSize.width, initialSize.height);
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    container.innerHTML = '';
+    container.appendChild(renderer.domElement);
 
-            objects.forEach(obj => {
-                obj.mesh.rotation.x += obj.speedX * 2;
-                obj.mesh.rotation.y += obj.speedY * 2;
-                obj.mesh.rotation.z += obj.speedZ * 2;
+    // Lighting
+    scene.add(new THREE.AmbientLight(0xffffff, 0.28));
+    const key = new THREE.PointLight(0x6dd5ff, 1.15, 260);
+    key.position.set(34, 20, 26);
+    scene.add(key);
+    const fill = new THREE.PointLight(0x2e7dff, 0.9, 240);
+    fill.position.set(-28, -16, -24);
+    scene.add(fill);
 
-                obj.mesh.position.x += obj.speedX * 0.5;
-                obj.mesh.position.y += obj.speedY * 0.5;
-                obj.mesh.position.z += obj.speedZ * 0.5;
+    // Core wireframe sphere
+    const coreGroup = new THREE.Group();
+    scene.add(coreGroup);
 
-                // Wrap around boundaries
-                if (obj.mesh.position.x > 60) obj.mesh.position.x = -60;
-                if (obj.mesh.position.x < -60) obj.mesh.position.x = 60;
-                if (obj.mesh.position.y > 60) obj.mesh.position.y = -60;
-                if (obj.mesh.position.y < -60) obj.mesh.position.y = 60;
-                if (obj.mesh.position.z > 60) obj.mesh.position.z = -60;
-                if (obj.mesh.position.z < -60) obj.mesh.position.z = 60;
-            });
+    const core = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(9, 1),
+        new THREE.MeshBasicMaterial({ color: 0x8ae7ff, wireframe: true, transparent: true, opacity: 0.34 })
+    );
+    coreGroup.add(core);
 
-            // Subtle camera movement
-            camera.position.z += (Math.sin(Date.now() * 0.0001) * 0.1);
-            renderer.render(scene, camera);
-        }
+    const innerCore = new THREE.Mesh(
+        new THREE.OctahedronGeometry(5.8, 0),
+        new THREE.MeshPhongMaterial({ color: 0x1d4fb3, wireframe: true, transparent: true, opacity: 0.22, shininess: 90 })
+    );
+    coreGroup.add(innerCore);
 
-        animate3d();
+    const ringA = new THREE.Mesh(
+        new THREE.TorusGeometry(12.5, 0.08, 12, 180),
+        new THREE.MeshBasicMaterial({ color: 0x69cbff, transparent: true, opacity: 0.35 })
+    );
+    ringA.rotation.x = Math.PI * 0.42;
+    coreGroup.add(ringA);
 
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+    const ringB = new THREE.Mesh(
+        new THREE.TorusGeometry(14.8, 0.08, 12, 180),
+        new THREE.MeshBasicMaterial({ color: 0x3ca2ff, transparent: true, opacity: 0.24 })
+    );
+    ringB.rotation.y = Math.PI * 0.35;
+    coreGroup.add(ringB);
+
+    // Data nodes orbiting around core
+    const nodeCount = 70;
+    const nodeGeom = new THREE.SphereGeometry(0.16, 8, 8);
+    const nodeMat = new THREE.MeshBasicMaterial({ color: 0x9fe9ff, transparent: true, opacity: 0.9 });
+    const nodes = [];
+
+    for (let i = 0; i < nodeCount; i++) {
+        const n = new THREE.Mesh(nodeGeom, nodeMat);
+        const radius = 17 + Math.random() * 12;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.random() * Math.PI;
+
+        n.position.set(
+            radius * Math.sin(phi) * Math.cos(theta),
+            radius * Math.cos(phi),
+            radius * Math.sin(phi) * Math.sin(theta)
+        );
+        scene.add(n);
+        nodes.push({
+            mesh: n,
+            velocity: new THREE.Vector3((Math.random() - 0.5) * 0.03, (Math.random() - 0.5) * 0.03, (Math.random() - 0.5) * 0.03)
         });
-
-        console.log('✓ Three.js 3D scene initialized');
-    } catch (error) {
-        console.log('⚠ Three.js initialization skipped:', error);
     }
-}
 
-// FLOATING ELEMENTS ANIMATION
-function initFloatingElements() {
-    const floatingElements = document.querySelectorAll('.float-box');
-    
-    floatingElements.forEach((element, index) => {
-        element.style.animation = `float 15s ease-in-out infinite`;
-        element.style.animationDelay = `${index * 1}s`;
+    // Dynamic network links
+    const lineMax = 180;
+    const linePositions = new Float32Array(lineMax * 2 * 3);
+    const lineGeometry = new THREE.BufferGeometry();
+    lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+    lineGeometry.setDrawRange(0, 0);
+    const lineMesh = new THREE.LineSegments(
+        lineGeometry,
+        new THREE.LineBasicMaterial({ color: 0x67c7ff, transparent: true, opacity: 0.17 })
+    );
+    scene.add(lineMesh);
+
+    // Starfield depth layer
+    const starCount = 850;
+    const starPositions = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount; i++) {
+        starPositions[i * 3] = (Math.random() - 0.5) * 220;
+        starPositions[i * 3 + 1] = (Math.random() - 0.5) * 120;
+        starPositions[i * 3 + 2] = (Math.random() - 0.5) * 220;
+    }
+    const starGeometry = new THREE.BufferGeometry();
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+    const stars = new THREE.Points(
+        starGeometry,
+        new THREE.PointsMaterial({ color: 0xb8ecff, size: 0.22, transparent: true, opacity: 0.38, sizeAttenuation: true })
+    );
+    scene.add(stars);
+
+    const mouse = { x: 0, y: 0 };
+    window.addEventListener('mousemove', (event) => {
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = (event.clientY / window.innerHeight) * 2 - 1;
     });
-}
 
-// Initialize Canvas Background Animation
-function initCanvasBackground() {
-    const canvas = document.getElementById('canvas');
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    // Particle system for tech background
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 2;
-            this.vx = (Math.random() - 0.5) * 1;
-            this.vy = (Math.random() - 0.5) * 1;
-            this.color = this.getRandomTechColor();
-        }
-
-        getRandomTechColor() {
-            const colors = ['#0066CC', '#FF3D3D', '#00D4FF', '#FF6B9D'];
-            return colors[Math.floor(Math.random() * colors.length)];
-        }
-
-        update() {
-            this.x += this.vx;
-            this.y += this.vy;
-
-            if (this.x > canvas.width) this.x = 0;
-            if (this.x < 0) this.x = canvas.width;
-            if (this.y > canvas.height) this.y = 0;
-            if (this.y < 0) this.y = canvas.height;
-        }
-
-        draw() {
-            ctx.fillStyle = this.color;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-
-    const particles = [];
-    const particleCount = 100;
-
-    // Initialize particles
-    for (let i = 0; i < particleCount; i++) {
-        particles.push(new Particle());
-    }
-
-    // Draw connections
-    function drawConnections() {
-        for (let i = 0; i < particles.length; i++) {
-            for (let j = i + 1; j < particles.length; j++) {
-                const dx = particles[i].x - particles[j].x;
-                const dy = particles[i].y - particles[j].y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < 150) {
-                    ctx.strokeStyle = `rgba(0, 102, 204, ${0.1 - distance / 1500})`;
-                    ctx.lineWidth = 0.5;
-                    ctx.beginPath();
-                    ctx.moveTo(particles[i].x, particles[i].y);
-                    ctx.lineTo(particles[j].x, particles[j].y);
-                    ctx.stroke();
+    function updateLinks() {
+        let segmentIndex = 0;
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+                const a = nodes[i].mesh.position;
+                const b = nodes[j].mesh.position;
+                const dist = a.distanceTo(b);
+                if (dist < 8.5 && segmentIndex < lineMax) {
+                    const base = segmentIndex * 6;
+                    linePositions[base] = a.x;
+                    linePositions[base + 1] = a.y;
+                    linePositions[base + 2] = a.z;
+                    linePositions[base + 3] = b.x;
+                    linePositions[base + 4] = b.y;
+                    linePositions[base + 5] = b.z;
+                    segmentIndex++;
                 }
             }
         }
+        lineGeometry.setDrawRange(0, segmentIndex * 2);
+        lineGeometry.attributes.position.needsUpdate = true;
     }
 
-    // Animation loop
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    function animate3d() {
+        requestAnimationFrame(animate3d);
+        const t = performance.now() * 0.001;
 
-        particles.forEach(particle => {
-            particle.update();
-            particle.draw();
+        coreGroup.rotation.y += 0.0014;
+        coreGroup.rotation.x = Math.sin(t * 0.35) * 0.08;
+        ringA.rotation.z += 0.002;
+        ringB.rotation.x -= 0.0017;
+        innerCore.rotation.z += 0.0012;
+
+        nodes.forEach((n) => {
+            n.mesh.position.add(n.velocity);
+            if (n.mesh.position.length() > 30) {
+                n.mesh.position.multiplyScalar(0.96);
+                n.velocity.multiplyScalar(-1);
+            }
         });
 
-        drawConnections();
-        requestAnimationFrame(animate);
+        const starPos = starGeometry.attributes.position.array;
+        for (let i = 0; i < starCount; i++) {
+            const idx = i * 3 + 2;
+            starPos[idx] += 0.05;
+            if (starPos[idx] > 90) starPos[idx] = -120;
+        }
+        starGeometry.attributes.position.needsUpdate = true;
+
+        updateLinks();
+
+        camera.position.x += ((mouse.x * 2.2) - camera.position.x) * 0.03;
+        camera.position.y += ((-mouse.y * 1.6) - camera.position.y) * 0.03;
+        camera.lookAt(0, 0, 0);
+
+        renderer.render(scene, camera);
     }
 
-    animate();
+    animate3d();
 
-    // Handle window resize
     window.addEventListener('resize', () => {
+        const size = getSize();
+        camera.aspect = size.width / size.height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(size.width, size.height);
+    });
+}
+
+// Initialize Canvas Background Animation
+function initCanvasBackground() {
+    const canvas = document.getElementById('canvas');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    let fontSize = 16;
+    let columns = 0;
+    let drops = [];
+    const glyphs = (
+        '01{}[]()<>=+-*/%$#@&_~^|\\:;,.? ' +
+        'function const let var class import export return async await'
+    ).split('');
+
+    function setupCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-    });
+        columns = Math.ceil(canvas.width / fontSize);
+        drops = Array.from({ length: columns }, () => Math.random() * -60);
+    }
+
+    function drawCodeRain() {
+        // Trails
+        ctx.fillStyle = 'rgba(10, 28, 48, 0.16)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.font = `${fontSize}px Menlo, Monaco, Consolas, "Courier New", monospace`;
+
+        for (let i = 0; i < drops.length; i++) {
+            const char = glyphs[Math.floor(Math.random() * glyphs.length)];
+            const x = i * fontSize;
+            const y = drops[i] * fontSize;
+
+            const headAlpha = 0.75 + Math.random() * 0.2;
+            const tailAlpha = 0.25 + Math.random() * 0.2;
+
+            // Glow head
+            ctx.fillStyle = `rgba(140, 235, 255, ${headAlpha})`;
+            ctx.fillText(char, x, y);
+
+            // Secondary trail tint
+            ctx.fillStyle = `rgba(0, 170, 255, ${tailAlpha})`;
+            ctx.fillText(char, x, y - fontSize);
+
+            if (y > canvas.height + fontSize && Math.random() > 0.975) {
+                drops[i] = Math.random() * -20;
+            }
+
+            drops[i] += 0.7 + Math.random() * 0.5;
+        }
+
+        requestAnimationFrame(drawCodeRain);
+    }
+
+    setupCanvas();
+    drawCodeRain();
+
+    window.addEventListener('resize', setupCanvas);
 }
 
 // =====================================================
@@ -432,7 +516,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initParallax();
     initFormValidation();
     initDarkModeToggle();
-    initFloatingElements();
 
     console.log('✓ Synerax website initialized successfully with 3D animations');
 });
